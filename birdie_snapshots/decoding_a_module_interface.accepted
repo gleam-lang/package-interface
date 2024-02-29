@@ -1,0 +1,164 @@
+---
+version: 1.0.4
+title: Decoding a module interface
+---
+Package(
+  name: "gleam_package_interface",
+  version: "1.0.0",
+  gleam_version_contraint: None(),
+  modules: {
+    my_module: Module(
+        documentation: [],
+        type_aliases: {
+          Wobble: TypeAlias(
+              alias: Named(
+                package: "gleam_package_interface",
+                module: "my_module",
+                name: "Wibble",
+                parameters: [
+                  Named(
+                    package: "",
+                    module: "gleam",
+                    name: "Int",
+                    parameters: [],
+                  ),
+                ],
+              ),
+              deprecation: Some(
+                item: Deprecation(message: "this is deprecated!"),
+              ),
+              documentation: Some(item: " Documentation!"),
+              parameters: 0,
+            ),
+        },
+        constants: {
+          wabble: Constant(
+              deprecation: None(),
+              documentation: None(),
+              implementations: Implementations(
+                gleam: True,
+                uses_erlang_externals: False,
+                uses_javascript_externals: False,
+              ),
+              type_: Fn(
+                parameters: [
+                  Named(
+                    package: "",
+                    module: "gleam",
+                    name: "String",
+                    parameters: [],
+                  ),
+                ],
+                return: Named(
+                  package: "gleam_package_interface",
+                  module: "my_module",
+                  name: "Wibble",
+                  parameters: [Variable(id: 0)],
+                ),
+              ),
+            ),
+          wibble: Constant(
+              deprecation: None(),
+              documentation: Some(item: " Documentation!"),
+              implementations: Implementations(
+                gleam: True,
+                uses_erlang_externals: False,
+                uses_javascript_externals: False,
+              ),
+              type_: Named(
+                package: "gleam_package_interface",
+                module: "my_module",
+                name: "Wibble",
+                parameters: [
+                  Named(
+                    package: "",
+                    module: "gleam",
+                    name: "Int",
+                    parameters: [],
+                  ),
+                ],
+              ),
+            ),
+          wobble: Constant(
+              deprecation: None(),
+              documentation: None(),
+              implementations: Implementations(
+                gleam: True,
+                uses_erlang_externals: False,
+                uses_javascript_externals: False,
+              ),
+              type_: Tuple(
+                elements: [
+                  Named(
+                    package: "",
+                    module: "gleam",
+                    name: "Int",
+                    parameters: [],
+                  ),
+                  Named(
+                    package: "",
+                    module: "gleam",
+                    name: "Int",
+                    parameters: [],
+                  ),
+                ],
+              ),
+            ),
+        },
+        functions: {
+          main: Function(
+              deprecation: None(),
+              documentation: Some(item: " Documentation!"),
+              implementations: Implementations(
+                gleam: True,
+                uses_erlang_externals: False,
+                uses_javascript_externals: False,
+              ),
+              parameters: [
+                Parameter(
+                  label: Some(item: "wibble"),
+                  type: Named(
+                    package: "",
+                    module: "gleam",
+                    name: "String",
+                    parameters: [],
+                  ),
+                ),
+              ],
+              return: Named(
+                package: "gleam_package_interface",
+                module: "my_module",
+                name: "Wibble",
+                parameters: [Variable(id: 0)],
+              ),
+            ),
+        },
+        types: {
+          Wibble: TypeDefinition(
+              constructors: [
+                TypeConstructor(
+                  documentation: Some(item: " Documentation!"),
+                  name: "Wibble",
+                  parameters: [
+                    Parameter(label: Some(item: "label"), type: Variable(id: 0)),
+                  ],
+                ),
+                TypeConstructor(
+                  documentation: Some(item: " Documentation!"),
+                  name: "Wobble",
+                  parameters: [Parameter(label: None(), type: Variable(id: 0))],
+                ),
+                TypeConstructor(
+                  documentation: None(),
+                  name: "Wabble",
+                  parameters: [],
+                ),
+              ],
+              deprecation: None(),
+              documentation: Some(item: " Documentation!"),
+              parameters: 1,
+            ),
+        },
+      ),
+  },
+)
