@@ -1,5 +1,11 @@
 # Changelog
 
-# v1.0.0 - 02-29-2024
+## Unreleased
+
+- The `package_interface` module gains the `list` and `result` functions.
+- The `package_interface` module gains the `int`, `float`, `string`, `bool` and
+  `bit_array` constants.
+
+## v1.0.0 - 02-29-2024
 
 - 🎉 first release
