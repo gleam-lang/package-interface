@@ -3,6 +3,60 @@ import gleam/dynamic.{type DecodeErrors, type Decoder, type Dynamic}
 import gleam/option.{type Option}
 import gleam/result
 
+// --- GLEAM PRELUDE TYPES -----------------------------------------------------
+
+/// The Gleam `Int` type's representation in a pacakge interface.
+///
+pub const int = Named(name: "Int", package: "", module: "gleam", parameters: [])
+
+/// The Gleam `Float` type.
+///
+pub const float = Named(
+  name: "Float",
+  package: "",
+  module: "gleam",
+  parameters: [],
+)
+
+/// The Gleam `String` type's representation in a package interface.
+///
+pub const string = Named(
+  name: "String",
+  package: "",
+  module: "gleam",
+  parameters: [],
+)
+
+/// The Gleam `Bool` type's representation in a package interface.
+///
+pub const bool = Named(
+  name: "Bool",
+  package: "",
+  module: "gleam",
+  parameters: [],
+)
+
+/// The Gleam `BitArray` type's representation in a package interface.
+///
+pub const bit_array = Named(
+  name: "BitArray",
+  package: "",
+  module: "gleam",
+  parameters: [],
+)
+
+/// A Gleam `List` with the given type as its parameter.
+///
+pub fn list(of type_: Type) -> Type {
+  Named(name: "List", package: "", module: "gleam", parameters: [type_])
+}
+
+/// A Gleam `Result` with the given types as the ok and error parameters.
+///
+pub fn result(ok: Type, error: Type) -> Type {
+  Named(name: "Result", package: "", module: "gleam", parameters: [ok, error])
+}
+
 // --- TYPES -------------------------------------------------------------------
 
 /// A Gleam package.
