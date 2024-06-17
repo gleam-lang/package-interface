@@ -212,7 +212,7 @@ fn sorted_dict(
     doc.concat([
       doc.from_string(name <> ": "),
       to_doc(value)
-      |> doc.nest(by: 2),
+        |> doc.nest(by: 2),
     ])
   })
   |> parenthesise("{", "}", _)
@@ -267,8 +267,8 @@ fn parenthesise(open: String, close: String, docs: List(Document)) -> Document {
         doc.from_string(open),
         doc.nest(doc.break("", ""), by: 2),
         docs
-        |> doc.join(with: doc.break(", ", ","))
-        |> doc.nest(by: 2),
+          |> doc.join(with: doc.break(", ", ","))
+          |> doc.nest(by: 2),
         doc.break("", ","),
         doc.from_string(close),
       ]
