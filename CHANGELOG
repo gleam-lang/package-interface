@@ -1,5 +1,9 @@
 # Changelog
 
-# v1.0.0 - 02-29-2024
+## Unreleased
+
+- Relaxed `gleam_json` constraint to `>= 1.0.0 and < 3.0.0`
+
+## v1.0.0 - 02-29-2024
 
 - 🎉 first release
