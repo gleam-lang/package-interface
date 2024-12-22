@@ -22,7 +22,7 @@ pub fn main() {
 
 pub fn decoding_a_module_interface_test() {
   let assert Ok(raw_package) = simplifile.read("./priv/interface.json")
-  let assert Ok(package) = json.decode(raw_package, package_interface.decoder)
+  let assert Ok(package) = json.parse(raw_package, package_interface.decoder())
 
   pretty_package(package)
   |> birdie.snap(title: "Decoding a module interface")

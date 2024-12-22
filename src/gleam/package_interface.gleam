@@ -1,7 +1,6 @@
 import gleam/dict.{type Dict}
-import gleam/dynamic.{type DecodeErrors, type Decoder, type Dynamic}
+import gleam/dynamic/decode.{type Decoder}
 import gleam/option.{type Option}
-import gleam/result
 
 // --- TYPES -------------------------------------------------------------------
 
@@ -344,149 +343,179 @@ pub type Type {
 
 // --- DECODERS ----------------------------------------------------------------
 
-pub fn decoder(dynamic: Dynamic) -> Result(Package, DecodeErrors) {
-  dynamic.decode4(
-    Package,
-    dynamic.field("name", dynamic.string),
-    dynamic.field("version", dynamic.string),
-    dynamic.field("gleam-version-constraint", dynamic.optional(dynamic.string)),
-    dynamic.field("modules", string_dict(module_decoder)),
-  )(dynamic)
-}
-
-pub fn module_decoder(dynamic: Dynamic) -> Result(Module, DecodeErrors) {
-  dynamic.decode5(
-    Module,
-    dynamic.field("documentation", dynamic.list(dynamic.string)),
-    dynamic.field("type-aliases", string_dict(type_alias_decoder)),
-    dynamic.field("types", string_dict(type_definition_decoder)),
-    dynamic.field("constants", string_dict(constant_decoder)),
-    dynamic.field("functions", string_dict(function_decoder)),
-  )(dynamic)
-}
-
-pub fn type_alias_decoder(dynamic: Dynamic) -> Result(TypeAlias, DecodeErrors) {
-  dynamic.decode4(
-    TypeAlias,
-    dynamic.field("documentation", dynamic.optional(dynamic.string)),
-    dynamic.field("deprecation", dynamic.optional(deprecation_decoder)),
-    dynamic.field("parameters", dynamic.int),
-    dynamic.field("alias", type_decoder),
-  )(dynamic)
-}
-
-pub fn type_definition_decoder(
-  dynamic: Dynamic,
-) -> Result(TypeDefinition, DecodeErrors) {
-  dynamic.decode4(
-    TypeDefinition,
-    dynamic.field("documentation", dynamic.optional(dynamic.string)),
-    dynamic.field("deprecation", dynamic.optional(deprecation_decoder)),
-    dynamic.field("parameters", dynamic.int),
-    dynamic.field("constructors", dynamic.list(constructor_decoder)),
-  )(dynamic)
-}
-
-pub fn constant_decoder(dynamic: Dynamic) -> Result(Constant, DecodeErrors) {
-  dynamic.decode4(
-    Constant,
-    dynamic.field("documentation", dynamic.optional(dynamic.string)),
-    dynamic.field("deprecation", dynamic.optional(deprecation_decoder)),
-    dynamic.field("implementations", implementations_decoder),
-    dynamic.field("type", type_decoder),
-  )(dynamic)
-}
-
-pub fn function_decoder(dynamic: Dynamic) -> Result(Function, DecodeErrors) {
-  dynamic.decode5(
-    Function,
-    dynamic.field("documentation", dynamic.optional(dynamic.string)),
-    dynamic.field("deprecation", dynamic.optional(deprecation_decoder)),
-    dynamic.field("implementations", implementations_decoder),
-    dynamic.field("parameters", dynamic.list(parameter_decoder)),
-    dynamic.field("return", type_decoder),
-  )(dynamic)
-}
-
-pub fn deprecation_decoder(
-  dynamic: Dynamic,
-) -> Result(Deprecation, DecodeErrors) {
-  dynamic.decode1(Deprecation, dynamic.field("message", dynamic.string))(
-    dynamic,
+pub fn decoder() -> Decoder(Package) {
+  use name <- decode.field("name", decode.string)
+  use version <- decode.field("version", decode.string)
+  use gleam_version_constraint <- decode.field(
+    "gleam-version-constraint",
+    decode.optional(decode.string),
   )
+  use modules <- decode.field(
+    "modules",
+    decode.dict(decode.string, module_decoder()),
+  )
+  Package(name:, version:, gleam_version_constraint:, modules:)
+  |> decode.success
 }
 
-pub fn constructor_decoder(
-  dynamic: Dynamic,
-) -> Result(TypeConstructor, DecodeErrors) {
-  dynamic.decode3(
-    TypeConstructor,
-    dynamic.field("documentation", dynamic.optional(dynamic.string)),
-    dynamic.field("name", dynamic.string),
-    dynamic.field("parameters", dynamic.list(parameter_decoder)),
-  )(dynamic)
+pub fn module_decoder() -> Decoder(Module) {
+  use documentation <- decode.field("documentation", decode.list(decode.string))
+  use type_aliases <- decode.field(
+    "type-aliases",
+    decode.dict(decode.string, type_alias_decoder()),
+  )
+  use types <- decode.field(
+    "types",
+    decode.dict(decode.string, type_definition_decoder()),
+  )
+  use constants <- decode.field(
+    "constants",
+    decode.dict(decode.string, constant_decoder()),
+  )
+  use functions <- decode.field(
+    "functions",
+    decode.dict(decode.string, function_decoder()),
+  )
+  Module(documentation:, type_aliases:, types:, constants:, functions:)
+  |> decode.success
 }
 
-pub fn implementations_decoder(
-  dynamic: Dynamic,
-) -> Result(Implementations, DecodeErrors) {
-  dynamic.decode3(
-    Implementations,
-    dynamic.field("gleam", dynamic.bool),
-    dynamic.field("uses-erlang-externals", dynamic.bool),
-    dynamic.field("uses-javascript-externals", dynamic.bool),
-  )(dynamic)
+pub fn type_alias_decoder() -> Decoder(TypeAlias) {
+  use documentation <- decode.field(
+    "documentation",
+    decode.optional(decode.string),
+  )
+  use deprecation <- decode.field(
+    "deprecation",
+    decode.optional(deprecation_decoder()),
+  )
+  use parameters <- decode.field("parameters", decode.int)
+  use alias <- decode.field("alias", type_decoder())
+  TypeAlias(documentation:, deprecation:, parameters:, alias:)
+  |> decode.success
 }
 
-pub fn parameter_decoder(dynamic: Dynamic) -> Result(Parameter, DecodeErrors) {
-  dynamic.decode2(
-    Parameter,
-    dynamic.field("label", dynamic.optional(dynamic.string)),
-    dynamic.field("type", type_decoder),
-  )(dynamic)
+pub fn type_definition_decoder() -> Decoder(TypeDefinition) {
+  use documentation <- decode.field(
+    "documentation",
+    decode.optional(decode.string),
+  )
+  use deprecation <- decode.field(
+    "deprecation",
+    decode.optional(deprecation_decoder()),
+  )
+  use parameters <- decode.field("parameters", decode.int)
+  use constructors <- decode.field(
+    "constructors",
+    decode.list(constructor_decoder()),
+  )
+  TypeDefinition(documentation:, deprecation:, parameters:, constructors:)
+  |> decode.success
 }
 
-pub fn type_decoder(dynamic: Dynamic) -> Result(Type, DecodeErrors) {
-  use kind <- result.try(dynamic.field("kind", dynamic.string)(dynamic))
+pub fn constant_decoder() -> Decoder(Constant) {
+  use documentation <- decode.field(
+    "documentation",
+    decode.optional(decode.string),
+  )
+  use deprecation <- decode.field(
+    "deprecation",
+    decode.optional(deprecation_decoder()),
+  )
+  use implementations <- decode.field(
+    "implementations",
+    implementations_decoder(),
+  )
+  use type_ <- decode.field("type", type_decoder())
+  Constant(documentation:, deprecation:, implementations:, type_:)
+  |> decode.success
+}
+
+pub fn function_decoder() -> Decoder(Function) {
+  use documentation <- decode.field(
+    "documentation",
+    decode.optional(decode.string),
+  )
+  use deprecation <- decode.field(
+    "deprecation",
+    decode.optional(deprecation_decoder()),
+  )
+  use implementations <- decode.field(
+    "implementations",
+    implementations_decoder(),
+  )
+  use parameters <- decode.field("parameters", decode.list(parameter_decoder()))
+  use return <- decode.field("return", type_decoder())
+  Function(documentation:, deprecation:, implementations:, parameters:, return:)
+  |> decode.success
+}
+
+pub fn deprecation_decoder() -> Decoder(Deprecation) {
+  use message <- decode.field("message", decode.string)
+  decode.success(Deprecation(message:))
+}
+
+pub fn constructor_decoder() -> Decoder(TypeConstructor) {
+  use documentation <- decode.field(
+    "documentation",
+    decode.optional(decode.string),
+  )
+  use name <- decode.field("name", decode.string)
+  use parameters <- decode.field("parameters", decode.list(parameter_decoder()))
+  decode.success(TypeConstructor(documentation:, name:, parameters:))
+}
+
+pub fn implementations_decoder() -> Decoder(Implementations) {
+  use gleam <- decode.field("gleam", decode.bool)
+  use uses_erlang_externals <- decode.field(
+    "uses-erlang-externals",
+    decode.bool,
+  )
+  use uses_javascript_externals <- decode.field(
+    "uses-javascript-externals",
+    decode.bool,
+  )
+  decode.success(Implementations(
+    gleam:,
+    uses_erlang_externals:,
+    uses_javascript_externals:,
+  ))
+}
+
+pub fn parameter_decoder() -> Decoder(Parameter) {
+  use label <- decode.field("label", decode.optional(decode.string))
+  use type_ <- decode.field("type", type_decoder())
+  decode.success(Parameter(label:, type_:))
+}
+
+pub fn type_decoder() -> Decoder(Type) {
+  use kind <- decode.field("kind", decode.string)
   case kind {
-    "variable" ->
-      dynamic.decode1(Variable, dynamic.field("id", dynamic.int))(dynamic)
+    "variable" -> {
+      use id <- decode.field("id", decode.int)
+      decode.success(Variable(id:))
+    }
 
-    "tuple" ->
-      dynamic.decode1(
-        Tuple,
-        dynamic.field("elements", dynamic.list(type_decoder)),
-      )(dynamic)
+    "tuple" -> {
+      use elements <- decode.field("elements", decode.list(type_decoder()))
+      decode.success(Tuple(elements:))
+    }
 
-    "named" ->
-      dynamic.decode4(
-        Named,
-        dynamic.field("name", dynamic.string),
-        dynamic.field("package", dynamic.string),
-        dynamic.field("module", dynamic.string),
-        dynamic.field("parameters", dynamic.list(type_decoder)),
-      )(dynamic)
+    "named" -> {
+      use name <- decode.field("name", decode.string)
+      use package <- decode.field("package", decode.string)
+      use module <- decode.field("module", decode.string)
+      use parameters <- decode.field("parameters", decode.list(type_decoder()))
+      decode.success(Named(name:, package:, module:, parameters:))
+    }
 
-    "fn" ->
-      dynamic.decode2(
-        Fn,
-        dynamic.field("parameters", dynamic.list(type_decoder)),
-        dynamic.field("return", type_decoder),
-      )(dynamic)
+    "fn" -> {
+      use parameters <- decode.field("parameters", decode.list(type_decoder()))
+      use return <- decode.field("return", type_decoder())
+      decode.success(Fn(parameters:, return:))
+    }
 
-    unknown_tag ->
-      Error([
-        dynamic.DecodeError(
-          expected: "one of variable, tuple, named, fn",
-          found: unknown_tag,
-          path: ["kind"],
-        ),
-      ])
+    _unknown_tag ->
+      decode.failure(Variable(id: 0), "String of variable, tuple, named, or fn")
   }
-}
-
-// --- UTILITY FUNCTIONS -------------------------------------------------------
-
-fn string_dict(values: Decoder(a)) -> Decoder(Dict(String, a)) {
-  dynamic.dict(dynamic.string, values)
 }
