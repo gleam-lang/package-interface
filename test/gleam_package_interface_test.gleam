@@ -20,12 +20,21 @@ pub fn main() {
   gleeunit.main()
 }
 
-pub fn decoding_a_module_interface_test() {
+pub fn decode_0_test() {
   let assert Ok(raw_package) = simplifile.read("./priv/interface.json")
   let assert Ok(package) = json.parse(raw_package, package_interface.decoder())
 
   pretty_package(package)
   |> birdie.snap(title: "Decoding a module interface")
+}
+
+pub fn decode_1_test() {
+  let assert Ok(raw_package) =
+    simplifile.read("./priv/interface_with_can_run_fields.json")
+  let assert Ok(package) = json.parse(raw_package, package_interface.decoder())
+
+  pretty_package(package)
+  |> birdie.snap(title: "Decoding a module interface with all fields")
 }
 
 // --- PRETTY PRINTING THE PACKAGE ---------------------------------------------
@@ -159,12 +168,16 @@ fn implementations_to_doc(implementations: Implementations) -> Document {
     gleam: gleam,
     uses_erlang_externals: uses_erlang_externals,
     uses_javascript_externals: uses_javascript_externals,
+    can_run_on_erlang:,
+    can_run_on_javascript:,
   ) = implementations
 
   constructor("Implementations", [
     #("gleam", bool(gleam)),
     #("uses_erlang_externals", bool(uses_erlang_externals)),
     #("uses_javascript_externals", bool(uses_javascript_externals)),
+    #("can_run_on_erlang", bool(can_run_on_erlang)),
+    #("can_run_on_javascript", bool(can_run_on_javascript)),
   ])
 }
 

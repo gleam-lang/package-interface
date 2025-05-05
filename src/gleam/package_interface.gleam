@@ -283,13 +283,21 @@ pub type Implementations {
     ///   implementations. This means that the function is only defined using
     ///   externals and can only be used on some targets.
     /// - `uses_erlang_externals: False` the function is not using external
-    ///   Erlang code. So, since the function doesn't have a fallback pure Gleam
-    ///   implementation, you won't be able to compile it on this target.
+    ///   Erlang code.
     /// - `uses_javascript_externals: True` the function is using JavaScript
-    ///   external code. This means that you will be able to use it on the
-    ///   JavaScript target with no problems.
+    ///   external code.
     ///
     uses_javascript_externals: Bool,
+    /// Whether this function can be used when targetting Erlang.
+    ///
+    /// This is false when it or a function it calls only has a JavaScript
+    /// implementation.
+    can_run_on_erlang: Bool,
+    /// Whether this function can be used when targetting JavaScript.
+    ///
+    /// This is false when it or a function it calls only has a Erlang
+    /// implementation.
+    can_run_on_javascript: Bool,
   )
 }
 
@@ -475,10 +483,24 @@ pub fn implementations_decoder() -> Decoder(Implementations) {
     "uses-javascript-externals",
     decode.bool,
   )
+  use can_run_on_erlang <- decode.optional_field(
+    "can-run-on-erlang",
+    option.None,
+    decode.optional(decode.bool),
+  )
+  use can_run_on_javascript <- decode.optional_field(
+    "can-run-on-javascript",
+    option.None,
+    decode.optional(decode.bool),
+  )
+  let can_run_on_erlang = can_run_on_erlang |> option.unwrap(gleam)
+  let can_run_on_javascript = can_run_on_javascript |> option.unwrap(gleam)
   decode.success(Implementations(
     gleam:,
     uses_erlang_externals:,
     uses_javascript_externals:,
+    can_run_on_erlang:,
+    can_run_on_javascript:,
   ))
 }
 

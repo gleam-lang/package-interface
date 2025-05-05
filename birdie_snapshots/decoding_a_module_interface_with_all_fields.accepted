@@ -1,8 +1,8 @@
 ---
 version: 1.2.7
-title: Decoding a module interface
+title: Decoding a module interface with all fields
 file: ./test/gleam_package_interface_test.gleam
-test_name: decode_0_test
+test_name: decode_1_test
 ---
 Package(
   name: "gleam_package_interface",
@@ -89,11 +89,11 @@ Package(
               deprecation: None(),
               documentation: None(),
               implementations: Implementations(
-                gleam: True,
-                uses_erlang_externals: False,
+                gleam: False,
+                uses_erlang_externals: True,
                 uses_javascript_externals: False,
                 can_run_on_erlang: True,
-                can_run_on_javascript: True,
+                can_run_on_javascript: False,
               ),
               type_: Tuple(
                 elements: [
