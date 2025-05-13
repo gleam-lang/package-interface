@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.1 - 2025-05-13
+
+- `gleam_json` dependency removed.
+
 ## v3.0.0 - 2025-05-05
 
 - Updated to include the `can_run_on_erlang` and `can_run_on_javascript`
