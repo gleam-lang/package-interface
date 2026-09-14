@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v4.0.0 - 2026-09-14
 
 - Updated to include the `deprecation` field on individual constructors.
 
