@@ -38,7 +38,8 @@
               "name": "Wibble",
               "parameters": [
                 { "label": "label", "type": { "kind": "variable", "id": 0 } }
-              ]
+              ],
+              "deprecation": { "message": "Don't use this constructor!" }
             },
             {
               "documentation": " Documentation!",

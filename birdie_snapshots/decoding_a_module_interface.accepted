@@ -152,16 +152,21 @@ Package(
                   parameters: [
                     Parameter(label: Some(item: "label"), type: Variable(id: 0)),
                   ],
+                  deprecation: Some(
+                    item: Deprecation(message: "Don't use this constructor!"),
+                  ),
                 ),
                 TypeConstructor(
                   documentation: Some(item: " Documentation!"),
                   name: "Wobble",
                   parameters: [Parameter(label: None(), type: Variable(id: 0))],
+                  deprecation: None(),
                 ),
                 TypeConstructor(
                   documentation: None(),
                   name: "Wabble",
                   parameters: [],
+                  deprecation: None(),
                 ),
               ],
               deprecation: None(),

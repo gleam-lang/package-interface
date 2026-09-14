@@ -154,12 +154,14 @@ fn constructor_to_doc(constructor_: TypeConstructor) -> Document {
     documentation: documentation,
     name: name,
     parameters: parameters,
+    deprecation:,
   ) = constructor_
 
   constructor("TypeConstructor", [
     #("documentation", optional(documentation, string)),
     #("name", string(name)),
     #("parameters", list(list.map(parameters, parameter_to_doc))),
+    #("deprecation", optional(deprecation, deprecation_to_doc)),
   ])
 }
 

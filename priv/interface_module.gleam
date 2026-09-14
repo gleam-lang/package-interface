@@ -5,6 +5,7 @@
 /// Documentation!
 pub type Wibble(a) {
   /// Documentation!
+  @deprecated("Don't use this constructor!")
   Wibble(label: a)
   /// Documentation!
   Wobble(a)

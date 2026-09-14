@@ -150,6 +150,10 @@ pub type TypeConstructor {
     /// ```
     ///
     parameters: List(Parameter),
+    /// If the constructor is deprecated this will hold the reason of the
+    /// deprecation.
+    ///
+    deprecation: Option(Deprecation),
   )
 }
 
@@ -470,7 +474,20 @@ pub fn constructor_decoder() -> Decoder(TypeConstructor) {
   )
   use name <- decode.field("name", decode.string)
   use parameters <- decode.field("parameters", decode.list(parameter_decoder()))
-  decode.success(TypeConstructor(documentation:, name:, parameters:))
+  // Older versions of the package interface omitted this field, so to be able to
+  // decode those, we need to allow for the possibility that it is not present,
+  // rather than `null`.
+  use deprecation <- decode.optional_field(
+    "deprecation",
+    option.None,
+    decode.optional(deprecation_decoder()),
+  )
+  decode.success(TypeConstructor(
+    documentation:,
+    name:,
+    parameters:,
+    deprecation:,
+  ))
 }
 
 pub fn implementations_decoder() -> Decoder(Implementations) {
