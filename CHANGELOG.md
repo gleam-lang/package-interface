@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Updated to include the `deprecation` field on individual constructors.
+
 ## v3.0.1 - 2025-05-13
 
 - `gleam_json` dependency removed.
