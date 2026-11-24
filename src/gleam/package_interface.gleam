@@ -1,6 +1,8 @@
 import gleam/dict.{type Dict}
 import gleam/dynamic/decode.{type Decoder}
 import gleam/option.{type Option}
+import gleam/string
+import gleam/uri
 
 // --- TYPES -------------------------------------------------------------------
 
@@ -350,6 +352,33 @@ pub type Type {
     /// ```
     ///
     parameters: List(Type),
+  )
+}
+
+// --- CONVENIENCE -------------------------------------------------------------
+
+/// Get the published package interface of a Gleam package on
+/// [Hex](https://hex.pm).
+///
+/// The package version must be specified in the full x.y.z format. If not
+/// specified, return the evergreen URI for the latest version.
+///
+/// This function does not validate its inputs and may return an error if they
+/// are not URI-safe.
+pub fn hex_package_interface_uri(
+  package_name: String,
+  package_version: Option(String),
+) -> Result(uri.Uri, Nil) {
+  let version = case package_version {
+    option.Some(v) -> "/" <> v
+    option.None -> ""
+  }
+  uri.parse(
+    "https://"
+    <> string.replace(package_name, "_", "-")
+    <> ".hexdocs.pm"
+    <> version
+    <> "/package-interface.json",
   )
 }
 

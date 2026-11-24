@@ -93,3 +93,5 @@ pub fn main() {
   todo as "now you can use the package interface however you want!"
 }
 ```
+
+The package interfaces of published gleam packages are available from the Hex package manager. For example, the interface of `gleam-http`: [latest](https://gleam-http.hexdocs.pm/package-interface.json); [version 4.0.0](https://gleam-http.hexdocs.pm/4.0.0/package-interface.json).
