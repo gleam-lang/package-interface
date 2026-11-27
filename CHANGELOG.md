@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.1.0 - unreleased
+
+- Added `hex_package_interface_uri`.
+
 ## v4.0.0 - 2026-09-14
 
 - Updated to include the `deprecation` field on individual constructors.

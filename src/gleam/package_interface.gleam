@@ -363,22 +363,24 @@ pub type Type {
 /// The package version must be specified in the full x.y.z format. If not
 /// specified, return the evergreen URI for the latest version.
 ///
-/// This function does not validate its inputs and may return an error if they
-/// are not URI-safe.
+/// This function does not validate its inputs and may return an invalid URI
+/// if they are not URI safe.
 pub fn hex_package_interface_uri(
   package_name: String,
   package_version: Option(String),
-) -> Result(uri.Uri, Nil) {
+) -> uri.Uri {
   let version = case package_version {
     option.Some(v) -> "/" <> v
     option.None -> ""
   }
-  uri.parse(
-    "https://"
-    <> string.replace(package_name, "_", "-")
-    <> ".hexdocs.pm"
-    <> version
-    <> "/package-interface.json",
+  uri.Uri(
+    scheme: option.Some("https"),
+    userinfo: option.None,
+    host: option.Some(string.replace(package_name, "_", "-") <> ".hexdocs.pm"),
+    port: option.None,
+    path: version <> "/package-interface.json",
+    query: option.None,
+    fragment: option.None,
   )
 }
 
