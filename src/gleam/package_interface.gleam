@@ -1,6 +1,12 @@
+import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/dynamic/decode.{type Decoder}
+import gleam/http
+import gleam/http/request
+import gleam/http/response
+import gleam/json
 import gleam/option.{type Option}
+import gleam/result
 import gleam/string
 import gleam/uri
 
@@ -355,9 +361,21 @@ pub type Type {
   )
 }
 
+/// An error that may occur when downloading the package interface from Hex.
+pub type HexDownloadError {
+  /// The response had an unexpected HTTP status code.
+  UnexpectedStatus(Int)
+  /// The response did not have a content-type header.
+  MissingContentType
+  /// The response did not set "application/json" as its content-type.
+  UnexpectedContentType(String)
+  /// The response body could not be decoded into a `Package`.
+  DecodeError(json.DecodeError)
+}
+
 // --- CONVENIENCE -------------------------------------------------------------
 
-/// Get the published package interface of a Gleam package on
+/// The URI of a published package interface of a Gleam package on
 /// [Hex](https://hex.pm).
 ///
 /// The package version must be specified in the full x.y.z format. If not
@@ -365,22 +383,75 @@ pub type Type {
 ///
 /// This function does not validate its inputs and may return an invalid URI
 /// if they are not URI safe.
-pub fn hex_package_interface_uri(
+pub fn hex_uri(
   package_name: String,
   package_version: Option(String),
 ) -> uri.Uri {
-  let version = case package_version {
-    option.Some(v) -> "/" <> v
-    option.None -> ""
-  }
+  let #(host, path) = hex_url_components(package_name, package_version)
   uri.Uri(
     scheme: option.Some("https"),
     userinfo: option.None,
-    host: option.Some(string.replace(package_name, "_", "-") <> ".hexdocs.pm"),
+    host: option.Some(host),
     port: option.None,
-    path: version <> "/package-interface.json",
+    path: path,
     query: option.None,
     fragment: option.None,
+  )
+}
+
+/// An HTTPS request for a published package interface of a Gleam package on
+/// [Hex](https://hex.pm).
+///
+/// The package version must be specified in the full x.y.z format. If not
+/// specified, return the evergreen URI for the latest version.
+///
+/// This function does not validate its inputs and may return an invalid request
+/// if they are not URI safe.
+pub fn hex_request(
+  package_name: String,
+  package_version: Option(String),
+) -> request.Request(String) {
+  let #(host, path) = hex_url_components(package_name, package_version)
+  request.Request(
+    method: http.Get,
+    headers: [#("accept", "application/json")],
+    body: "",
+    scheme: http.Https,
+    host: host,
+    port: option.None,
+    path: path,
+    query: option.None,
+  )
+}
+
+/// Parse a Hex package interface HTTP response into a `Package`.
+pub fn hex_response(
+  response: response.Response(String),
+) -> Result(Package, HexDownloadError) {
+  use <- bool.guard(
+    response.status != 200,
+    Error(UnexpectedStatus(response.status)),
+  )
+  use content_type <- result.try(
+    response.get_header(response, "content-type")
+    |> result.replace_error(MissingContentType),
+  )
+  use <- bool.guard(
+    content_type != "application/json",
+    Error(UnexpectedContentType(content_type)),
+  )
+  json.parse(response.body, decoder())
+  |> result.map_error(DecodeError)
+}
+
+fn hex_url_components(name, version) {
+  let version = case version {
+    option.Some(v) -> "/" <> v
+    option.None -> ""
+  }
+  #(
+    string.replace(name, "_", "-") <> ".hexdocs.pm",
+    version <> "/package-interface.json",
   )
 }
 

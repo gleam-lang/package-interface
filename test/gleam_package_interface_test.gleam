@@ -40,13 +40,13 @@ pub fn decode_1_test() {
 
 pub fn hex_package_interface_uri_latest_test() {
   assert "https://gleam-http.hexdocs.pm/package-interface.json"
-    == package_interface.hex_package_interface_uri("gleam_http", None)
+    == package_interface.hex_uri("gleam_http", None)
     |> uri.to_string
 }
 
 pub fn hex_package_interface_uri_version_test() {
   assert "https://gleam-http.hexdocs.pm/4.0.0/package-interface.json"
-    == package_interface.hex_package_interface_uri("gleam_http", Some("4.0.0"))
+    == package_interface.hex_uri("gleam_http", Some("4.0.0"))
     |> uri.to_string
 }
 
