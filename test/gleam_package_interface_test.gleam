@@ -13,6 +13,7 @@ import gleam/package_interface.{
   TypeConstructor, TypeDefinition, Variable,
 }
 import gleam/string
+import gleam/uri
 import gleeunit
 import simplifile
 
@@ -35,6 +36,18 @@ pub fn decode_1_test() {
 
   pretty_package(package)
   |> birdie.snap(title: "Decoding a module interface with all fields")
+}
+
+pub fn hex_package_interface_uri_latest_test() {
+  assert "https://gleam-http.hexdocs.pm/package-interface.json"
+    == package_interface.hex_uri("gleam_http", None)
+    |> uri.to_string
+}
+
+pub fn hex_package_interface_uri_version_test() {
+  assert "https://gleam-http.hexdocs.pm/4.0.0/package-interface.json"
+    == package_interface.hex_uri("gleam_http", Some("4.0.0"))
+    |> uri.to_string
 }
 
 // --- PRETTY PRINTING THE PACKAGE ---------------------------------------------
